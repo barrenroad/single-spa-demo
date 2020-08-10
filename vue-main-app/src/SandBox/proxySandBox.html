@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProxySandBox</title>
+</head>
+<body>
+  <script>  
+    class ProxySandBox {
+      constructor() {
+        const rawWindow = window;
+        const fakeWindow= {};
+        const proxy = new Proxy(fakeWindow, {
+          set(target, prop, value) {
+            target[prop] = value;
+            return true;
+          },
+          get(target, prop) {
+            return rawWindow[prop] || target[prop];
+          }
+        });
+        this.proxy = proxy;
+      }
+    }
+
+    let sandBox1 = new ProxySandBox();
+    let sandBox2 = new ProxySandBox();
+
+    ((window) => {
+      window.a = 1;
+      console.log(window.a);
+    })(sandBox1.proxy);
+
+    ((window) => {
+      window.a = 11111;
+      console.log(window.a);
+    })(sandBox1.proxy);
+  </script>
+</body>
+</html>
